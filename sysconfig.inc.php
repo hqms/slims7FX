@@ -104,7 +104,10 @@ define('LANG', LIB.'lang'.DS);
 // senayan web doc root dir
 /* Custom base URL */
 $sysconf['baseurl'] = '';
-$temp_senayan_web_root_dir = preg_replace('@admin.*@i', '', dirname($_SERVER['PHP_SELF']));
+//simplify the url :D
+//$temp_senayan_web_root_dir = preg_replace('@admin.*@i', '', dirname($_SERVER['PHP_SELF']));
+$temp_senayan_web_root_dir = '';
+
 define('SWB', $sysconf['baseurl'].$temp_senayan_web_root_dir.(preg_match('@\/$@i', $temp_senayan_web_root_dir)?'':'/'));
 
 // javascript library web root dir
