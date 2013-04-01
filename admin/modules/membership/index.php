@@ -15,11 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- *
  */
 
 /* Membership Management section */
-
 // key to authenticate
 define('INDEX_AUTH', '1');
 // key to get full database access
@@ -29,22 +27,21 @@ if (!defined('SB')) {
     // main system configuration
     require '../../../sysconfig.inc.php';
     // start the session
-    require SB.'admin/default/session.inc.php';
+    require SB . 'admin/default/session.inc.php';
 }
 // IP based access limitation
-require LIB.'ip_based_access.inc.php';
+require LIB . 'ip_based_access.inc.php';
 do_checkIP('smc');
 do_checkIP('smc-membership');
 
-require SB.'admin/default/session_check.inc.php';
-require SIMBIO.'simbio_GUI/table/simbio_table.inc.php';
-require SIMBIO.'simbio_GUI/form_maker/simbio_form_table_AJAX.inc.php';
-require SIMBIO.'simbio_GUI/paging/simbio_paging.inc.php';
-require SIMBIO.'simbio_DB/datagrid/simbio_dbgrid.inc.php';
-require SIMBIO.'simbio_DB/simbio_dbop.inc.php';
-require SIMBIO.'simbio_UTILS/simbio_date.inc.php';
-require SIMBIO.'simbio_FILE/simbio_file_upload.inc.php';
-
+require SB . 'admin/default/session_check.inc.php';
+require SIMBIO . 'simbio_GUI/table/simbio_table.inc.php';
+require SIMBIO . 'simbio_GUI/form_maker/simbio_form_table_AJAX.inc.php';
+require SIMBIO . 'simbio_GUI/paging/simbio_paging.inc.php';
+require SIMBIO . 'simbio_DB/datagrid/simbio_dbgrid.inc.php';
+require SIMBIO . 'simbio_DB/simbio_dbop.inc.php';
+require SIMBIO . 'simbio_UTILS/simbio_date.inc.php';
+require SIMBIO . 'simbio_FILE/simbio_file_upload.inc.php';
 // privileges checking
 $can_read = utility::havePrivilege('membership', 'r');
 $can_write = utility::havePrivilege('membership', 'w');
@@ -67,10 +64,9 @@ if (isset($_POST['saveData']) AND $can_read AND $can_write) {
         utility::jsAlert(__('Password confirmation does not match. See if your Caps Lock key is on!'));
         exit();
     } else {
-
         // include custom fields file
-        if (file_exists(MDLBS.'membership/member_custom_fields.inc.php')) {
-            include MDLBS.'membership/member_custom_fields.inc.php';
+        if (file_exists(MDLBS . 'membership/member_custom_fields.inc.php')) {
+            include MDLBS . 'membership/member_custom_fields.inc.php';
         }
 
         /**
@@ -111,7 +107,7 @@ if (isset($_POST['saveData']) AND $can_read AND $can_write) {
         // extending membership
         if (isset($_POST['extend']) AND !empty($_POST['extend'])) {
             // get membership periode from database
-            $mtype_query = $dbs->query("SELECT member_periode FROM mst_member_type WHERE member_type_id=".$data['member_type_id']);
+            $mtype_query = $dbs->query("SELECT member_periode FROM mst_member_type WHERE member_type_id=" . $data['member_type_id']);
             $mtype_data = $mtype_query->fetch_row();
             $data['register_date'] = date('Y-m-d');
             $data['expire_date'] = simbio_date::getNextDate($mtype_data[0], $data['register_date']);
@@ -131,29 +127,28 @@ if (isset($_POST['saveData']) AND $can_read AND $can_write) {
             // create upload object
             $upload = new simbio_file_upload();
             $upload->setAllowableFormat($sysconf['allowed_images']);
-            $upload->setMaxSize($sysconf['max_image_upload']*1024); // approx. 100 kb
-            $upload->setUploadDir(IMGBS.'persons');
+            $upload->setMaxSize($sysconf['max_image_upload'] * 1024); // approx. 100 kb
+            $upload->setUploadDir(IMGBS . 'persons');
             // give new name for upload file
-            $new_filename = 'member_'.$data['member_id'];
+            $new_filename = 'member_' . $data['member_id'];
             $upload_status = $upload->doUpload('image', $new_filename);
             if ($upload_status == UPLOAD_SUCCESS) {
                 $data['member_image'] = $dbs->escape_string($upload->new_filename);
             }
         } else if (!empty($_POST['base64picstring'])) {
-			list($filedata, $filedom) = explode('#image/type#', $_POST['base64picstring']);
-			$new_filename = 'member_'.$data['member_id'].'.'.strtolower($filedom);
+            list($filedata, $filedom) = explode('#image/type#', $_POST['base64picstring']);
+            $new_filename = 'member_' . $data['member_id'] . '.' . strtolower($filedom);
 
-			if (file_put_contents(IMGBS.'persons/'.$new_filename, base64_decode($filedata))) {
-				$data['member_image'] = $dbs->escape_string($new_filename);
-				if (!defined('UPLOAD_SUCCESS')) define('UPLOAD_SUCCESS', 1);
-				$upload_status = UPLOAD_SUCCESS;
-			}
-		}
+            if (file_put_contents(IMGBS . 'persons/' . $new_filename, base64_decode($filedata))) {
+                $data['member_image'] = $dbs->escape_string($new_filename);
+                if (!defined('UPLOAD_SUCCESS')) define('UPLOAD_SUCCESS', 1);
+                $upload_status = UPLOAD_SUCCESS;
+            }
+        }
         // password confirmation
         if (($mpasswd1 AND $mpasswd2) AND ($mpasswd1 === $mpasswd2)) {
-            $data['mpasswd'] = 'literal{MD5(\''.$mpasswd2.'\')}';
+            $data['mpasswd'] = 'literal{MD5(\'' . $mpasswd2 . '\')}';
         }
-
         // create sql op object
         $sql_op = new simbio_dbop($dbs);
         if (isset($_POST['updateRecordID'])) {
@@ -167,29 +162,33 @@ if (isset($_POST['saveData']) AND $can_read AND $can_write) {
             $update = $sql_op->update('member', $data, "member_id='$updateRecordID'");
             if ($update) {
                 // update other tables contain this member ID
-                @$dbs->query('UPDATE loan SET member_id=\''.$data['member_id'].'\' WHERE member_id=\''.$old_member_ID.'\'');
-                @$dbs->query('UPDATE fines SET member_id=\''.$data['member_id'].'\' WHERE member_id=\''.$old_member_ID.'\'');
+                @$dbs->query('UPDATE loan SET member_id=\'' . $data['member_id'] . '\' WHERE member_id=\'' . $old_member_ID . '\'');
+                @$dbs->query('UPDATE fines SET member_id=\'' . $data['member_id'] . '\' WHERE member_id=\'' . $old_member_ID . '\'');
                 utility::jsAlert(__('Member Data Successfully Updated'));
                 // upload status alert
                 if (isset($upload_status)) {
                     if ($upload_status == UPLOAD_SUCCESS) {
                         // write log
-                        utility::writeLogs($dbs, 'staff', $_SESSION['uid'], 'membership', $_SESSION['realname'].' upload image file '.$upload->new_filename);
+                        utility::writeLogs($dbs, 'staff', $_SESSION['uid'], 'membership', $_SESSION['realname'] . ' upload image file ' . $upload->new_filename);
                         utility::jsAlert(__('Image Uploaded Successfully'));
                     } else {
                         // write log
-                        utility::writeLogs($dbs, 'staff', $_SESSION['uid'], 'membership', 'ERROR : '.$_SESSION['realname'].' FAILED TO upload image file '.$upload->new_filename.', with error ('.$upload->error.')');
+                        utility::writeLogs($dbs, 'staff', $_SESSION['uid'], 'membership', 'ERROR : ' . $_SESSION['realname'] . ' FAILED TO upload image file ' . $upload->new_filename . ', with error (' . $upload->error . ')');
                         utility::jsAlert(__('Image FAILED to upload'));
                     }
                 }
                 // write log
-                utility::writeLogs($dbs, 'staff', $_SESSION['uid'], 'membership', $_SESSION['realname'].' update member data ('.$memberName.') with ID ('.$memberID.')');
+                utility::writeLogs($dbs, 'staff', $_SESSION['uid'], 'membership', $_SESSION['realname'] . ' update member data (' . $memberName . ') with ID (' . $memberID . ')');
                 echo '<script type="text/javascript">parent.$(\'#mainContent\').simbioAJAX(parent.$.ajaxHistory[0].url);</script>';
-            } else { utility::jsAlert(__('Member Data FAILED to Save/Update. Please Contact System Administrator')."\nDEBUG : ".$sql_op->error); }
+            } else {
+                utility::jsAlert(__('Member Data FAILED to Save/Update. Please Contact System Administrator') . "\nDEBUG : " . $sql_op->error);
+            }
             exit();
         } else {
             /* INSERT RECORD MODE */
-            if (!$mpasswd1 AND !$mpasswd2) { $data['mpasswd'] = 'literal{NULL}'; }
+            if (!$mpasswd1 AND !$mpasswd2) {
+                $data['mpasswd'] = 'literal{NULL}';
+            }
             // insert the data
             $insert = $sql_op->insert('member', $data);
             if ($insert) {
@@ -198,18 +197,20 @@ if (isset($_POST['saveData']) AND $can_read AND $can_write) {
                 if (isset($upload_status)) {
                     if ($upload_status == UPLOAD_SUCCESS) {
                         // write log
-                        utility::writeLogs($dbs, 'staff', $_SESSION['uid'], 'membership', $_SESSION['realname'].' upload image file '.$upload->new_filename);
+                        utility::writeLogs($dbs, 'staff', $_SESSION['uid'], 'membership', $_SESSION['realname'] . ' upload image file ' . $upload->new_filename);
                         utility::jsAlert(__('Image Uploaded Successfully'));
                     } else {
                         // write log
-                        utility::writeLogs($dbs, 'staff', $_SESSION['uid'], 'membership', 'ERROR : '.$_SESSION['realname'].' FAILED TO upload image file '.$upload->new_filename.', with error ('.$upload->error.')');
+                        utility::writeLogs($dbs, 'staff', $_SESSION['uid'], 'membership', 'ERROR : ' . $_SESSION['realname'] . ' FAILED TO upload image file ' . $upload->new_filename . ', with error (' . $upload->error . ')');
                         utility::jsAlert(__('Image FAILED to upload'));
                     }
                 }
                 // write log
-                utility::writeLogs($dbs, 'staff', $_SESSION['uid'], 'membership', $_SESSION['realname'].' add new member ('.$memberName.') with ID ('.$memberID.')');
-                echo '<script type="text/javascript">parent.$(\'#mainContent\').simbioAJAX(\''.$_SERVER['PHP_SELF'].'\');</script>';
-            } else { utility::jsAlert(__('Member Data FAILED to Save/Update. Please Contact System Administrator')."\nDEBUG : ".$sql_op->error); }
+                utility::writeLogs($dbs, 'staff', $_SESSION['uid'], 'membership', $_SESSION['realname'] . ' add new member (' . $memberName . ') with ID (' . $memberID . ')');
+                echo '<script type="text/javascript">parent.$(\'#mainContent\').simbioAJAX(\'' . $_SERVER['PHP_SELF'] . '\');</script>';
+            } else {
+                utility::jsAlert(__('Member Data FAILED to Save/Update. Please Contact System Administrator') . "\nDEBUG : " . $sql_op->error);
+            }
             exit();
         }
     }
@@ -223,15 +224,15 @@ if (isset($_POST['saveData']) AND $can_read AND $can_write) {
         // get membership periode from database
         $mtype_q = $dbs->query('SELECT member_periode, m.member_name FROM member AS m
             LEFT JOIN mst_member_type AS mt ON m.member_type_id=mt.member_type_id
-            WHERE m.member_id=\''.$memberID.'\'');
+            WHERE m.member_id=\'' . $memberID . '\'');
         $mtype_d = $mtype_q->fetch_row();
         $expire_date = simbio_date::getNextDate($mtype_d[0], $curr_date);
-        @$dbs->query('UPDATE member SET expire_date=\''.$expire_date.'\' WHERE member_id=\''.$memberID.'\'');
+        @$dbs->query('UPDATE member SET expire_date=\'' . $expire_date . '\' WHERE member_id=\'' . $memberID . '\'');
         // write log
-        utility::writeLogs($dbs, 'staff', $_SESSION['uid'], 'membership', $_SESSION['realname'].' extends membership for member ('.$mtype_d[1].') with ID ('.$memberID.')');
+        utility::writeLogs($dbs, 'staff', $_SESSION['uid'], 'membership', $_SESSION['realname'] . ' extends membership for member (' . $mtype_d[1] . ') with ID (' . $memberID . ')');
         $num_extended++;
     }
-    header('Location: '.MWB.'membership/index.php?expire=true&numExtended='.$num_extended);
+    header('Location: ' . MWB . 'membership/index.php?expire=true&numExtended=' . $num_extended);
     exit();
 } else if (isset($_POST['itemID']) AND !empty($_POST['itemID']) AND isset($_POST['itemAction'])) {
     if (!($can_read AND $can_write)) {
@@ -252,17 +253,17 @@ if (isset($_POST['saveData']) AND $can_read AND $can_write) {
         // check if the member still have loan
         $loan_q = $dbs->query('SELECT DISTINCT m.member_id, m.member_name, COUNT(l.loan_id) FROM member AS m
             LEFT JOIN loan AS l ON (m.member_id=l.member_id AND l.is_lent=1 AND l.is_return=0)
-            WHERE m.member_id=\''.$itemID.'\' GROUP BY m.member_id');
+            WHERE m.member_id=\'' . $itemID . '\' GROUP BY m.member_id');
         $loan_d = $loan_q->fetch_row();
         if ($loan_d[2] < 1) {
             if (!$sql_op->delete('member', "member_id='$itemID'")) {
                 $error_num++;
             } else {
                 // write log
-                utility::writeLogs($dbs, 'staff', $_SESSION['uid'], 'membership', $_SESSION['realname'].' DELETE member data ('.$loan_d[1].') with ID ('.$loan_d[0].')');
+                utility::writeLogs($dbs, 'staff', $_SESSION['uid'], 'membership', $_SESSION['realname'] . ' DELETE member data (' . $loan_d[1] . ') with ID (' . $loan_d[0] . ')');
             }
         } else {
-            $still_have_loan[] = $loan_d[0].' - '.$loan_d[1];
+            $still_have_loan[] = $loan_d[0] . ' - ' . $loan_d[1];
             $error_num++;
         }
     }
@@ -270,18 +271,18 @@ if (isset($_POST['saveData']) AND $can_read AND $can_write) {
     if ($still_have_loan) {
         $members = '';
         foreach ($still_have_loan as $mbr) {
-            $members .= $mbr."\n";
+            $members .= $mbr . "\n";
         }
-        utility::jsAlert(__('Below member data can\'t be deleted because still have unreturned item(s)').' : '."\n".$mbr);
+        utility::jsAlert(__('Below member data can\'t be deleted because still have unreturned item(s)') . ' : ' . "\n" . $mbr);
         exit();
     }
     // error alerting
     if ($error_num == 0) {
         utility::jsAlert(__('All Data Successfully Deleted'));
-        echo '<script type="text/javascript">parent.$(\'#mainContent\').simbioAJAX(\''.$_SERVER['PHP_SELF'].'?'.$_POST['lastQueryStr'].'\');</script>';
+        echo '<script type="text/javascript">parent.$(\'#mainContent\').simbioAJAX(\'' . $_SERVER['PHP_SELF'] . '?' . $_POST['lastQueryStr'] . '\');</script>';
     } else {
         utility::jsAlert(__('Some or All Data NOT deleted successfully!\nPlease contact system administrator'));
-        echo '<script type="text/javascript">parent.$(\'#mainContent\').simbioAJAX(\''.$_SERVER['PHP_SELF'].'?'.$_POST['lastQueryStr'].'\');</script>';
+        echo '<script type="text/javascript">parent.$(\'#mainContent\').simbioAJAX(\'' . $_SERVER['PHP_SELF'] . '?' . $_POST['lastQueryStr'] . '\');</script>';
     }
     exit();
 }
@@ -301,7 +302,9 @@ if (isset($_POST['saveData']) AND $can_read AND $can_write) {
     <a href="<?php echo MWB; ?>membership/index.php?action=detail" class="headerText2"><?php echo __('Add New Member'); ?></a>
 	</div>
     <form name="search" action="<?php echo MWB; ?>membership/index.php" id="search" method="get" style="display: inline;"><?php echo __('Member Search'); ?> :
-	    <input type="text" name="keywords" size="30" /><?php if (isset($_GET['expire'])) { echo '<input type="hidden" name="expire" value="true" />'; } ?>
+	    <input type="text" name="keywords" size="30" /><?php if (isset($_GET['expire'])) {
+    echo '<input type="hidden" name="expire" value="true" />';
+} ?>
 	    <input type="submit" id="doSearch" value="<?php echo __('Search'); ?>" class="button" />
 	</form>
 	</div>
@@ -312,22 +315,19 @@ if (isset($_POST['saveData']) AND $can_read AND $can_write) {
 /* main content */
 if (isset($_POST['detail']) OR (isset($_GET['action']) AND $_GET['action'] == 'detail')) {
     if (!($can_read AND $can_write)) {
-        die('<div class="errorBox">'.__('You don\'t have enough privileges to view this section').'</div>');
+        die('<div class="errorBox">' . __('You don\'t have enough privileges to view this section') . '</div>');
     }
     /* RECORD FORM */
     $itemID = $dbs->escape_string(trim(isset($_POST['itemID'])?$_POST['itemID']:''));
     $rec_q = $dbs->query("SELECT * FROM member WHERE member_id='$itemID'");
     $rec_d = $rec_q->fetch_assoc();
-
     // create new instance
-    $form = new simbio_form_table_AJAX('mainForm', $_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING'], 'post');
-    $form->submit_button_attr = 'name="saveData" value="'.__('Save').'" class="button"';
-
+    $form = new simbio_form_table_AJAX('mainForm', $_SERVER['PHP_SELF'] . '?' . $_SERVER['QUERY_STRING'], 'post');
+    $form->submit_button_attr = 'name="saveData" value="' . __('Save') . '" class="button"';
     // form table attributes
     $form->table_attr = 'align="center" id="dataList" cellpadding="5" cellspacing="0"';
     $form->table_header_attr = 'class="alterCell" style="font-weight: bold;"';
     $form->table_content_attr = 'class="alterCell2"';
-
     // edit mode flag set
     if ($rec_q->num_rows > 0) {
         $form->edit_mode = true;
@@ -336,7 +336,7 @@ if (isset($_POST['detail']) OR (isset($_GET['action']) AND $_GET['action'] == 'd
         // form record title
         $form->record_title = $rec_d['member_name'];
         // submit button attribute
-        $form->submit_button_attr = 'name="saveData" value="'.__('Update').'" class="button"';
+        $form->submit_button_attr = 'name="saveData" value="' . __('Update') . '" class="button"';
     }
 
     /* Form Element(s) */
@@ -350,52 +350,65 @@ if (isset($_POST['detail']) OR (isset($_GET['action']) AND $_GET['action'] == 'd
             // extend membership
             $chbox_array[] = array('1', __('Extend'));
             $form->addCheckBox('extend', __('Extend Membership'), $chbox_array);
-            $expired_message = '<b style="color: #FF0000;">('.__('Membership Already Expired').')</b>';
+            $expired_message = '<b style="color: #FF0000;">(' . __('Membership Already Expired') . ')</b>';
         }
     }
-
     // include custom fields file
-    if (file_exists(MDLBS.'membership/member_custom_fields.inc.php')) {
-        include MDLBS.'membership/member_custom_fields.inc.php';
+    if (file_exists(MDLBS . 'membership/member_custom_fields.inc.php')) {
+        include MDLBS . 'membership/member_custom_fields.inc.php';
     }
-
     // member code
-    $str_input = simbio_form_element::textField('text', 'memberID', $rec_d['member_id'], 'id="memberID" onblur="ajaxCheckID(\''.SWB.'admin/AJAX_check_id.php\', \'member\', \'member_id\', \'msgBox\', \'memberID\')" style="width: 30%;"');
+    $str_input = simbio_form_element::textField('text', 'memberID', $rec_d['member_id'], 'id="memberID" onblur="ajaxCheckID(\'' . SWB . 'admin/AJAX_check_id.php\', \'member\', \'member_id\', \'msgBox\', \'memberID\')" style="width: 30%;"');
     $str_input .= ' &nbsp; <span id="msgBox">&nbsp;</span>';
-    $form->addAnything(__('Member ID').'*', $str_input);
+    $form->addAnything(__('Member ID') . '*', $str_input);
     // member name
-    $form->addTextField('text', 'memberName', __('Member Name').'*', $rec_d['member_name'], 'style="width: 100%;"');
+    $form->addTextField('text', 'memberName', __('Member Name') . '*', $rec_d['member_name'], 'style="width: 100%;"');
     // member birth date
     $form->addDateField('birthDate', __('Birth Date'), $rec_d['birth_date']);
     // member since date
-    $form->addDateField('sinceDate', __('Member Since').'*', $form->edit_mode?$rec_d['member_since_date']:date('Y-m-d'));
+    $form->addDateField('sinceDate', __('Member Since') . '*', $form->edit_mode?$rec_d['member_since_date']:date('Y-m-d'));
     // member register date
-    $form->addDateField('regDate', __('Register Date').'*', $form->edit_mode?$rec_d['register_date']:date('Y-m-d'));
+    $form->addDateField('regDate', __('Register Date') . '*', $form->edit_mode?$rec_d['register_date']:date('Y-m-d'));
     // member expire date
     if ($form->edit_mode) {
-        $form->addDateField('expDate', __('Expiry Date').'*', $rec_d['expire_date']);
+        $form->addDateField('expDate', __('Expiry Date') . '*', $rec_d['expire_date']);
     } else {
         $chbox_array[] = array('1', __('Auto Set'));
-        $str_input = '<div>'.simbio_form_element::checkBox('extend', $chbox_array, '1').'</div>';
-        $str_input .= '<div>'.simbio_form_element::dateField('expDate', $rec_d['expire_date']).'</div>';
-        $form->addAnything(__('Expiry Date').'*', $str_input);
+        $str_input = '<div>' . simbio_form_element::checkBox('extend', $chbox_array, '1') . '</div>';
+        $str_input .= '<div>' . simbio_form_element::dateField('expDate', $rec_d['expire_date']) . '</div>';
+        $form->addAnything(__('Expiry Date') . '*', $str_input);
     }
     // member institution
     $form->addTextField('text', 'instName', __('Institution'), $rec_d['inst_name'], 'style="width: 100%;"');
     // member type
-        // get mtype data related to this record from database
-        $mtype_query = $dbs->query("SELECT member_type_id, member_type_name FROM mst_member_type");
-        $mtype_options = array();
-        while ($mtype_data = $mtype_query->fetch_row()) {
-            $mtype_options[] = array($mtype_data[0], $mtype_data[1]);
-        }
-    $form->addSelectList('memberTypeID', __('Membership Type').'*', $mtype_options, $rec_d['member_type_id']);
+    // get mtype data related to this record from databaset
+    $mtype_query = $dbs->query("SELECT member_type_id, member_type_name FROM mst_member_type");
+    $mtype_options = array();
+    while ($mtype_data = $mtype_query->fetch_row()) {
+        $mtype_options[] = array($mtype_data[0], $mtype_data[1]);
+    }
+    $form->addSelectList('memberTypeID', __('Membership Type') . '*', $mtype_options, $rec_d['member_type_id']);
     // member gender
     $gender_chbox[0] = array('1', __('Male'));
     $gender_chbox[1] = array('0', __('Female'));
     $form->addRadio('gender', __('Gender'), $gender_chbox, !empty($rec_d['gender'])?$rec_d['gender']:'0');
     // member address
     $form->addTextField('textarea', 'memberAddress', __('Address'), $rec_d['member_address'], 'rows="2" style="width: 100%;"');
+
+	$curl_init  = curl_init('http://api.geonames.org/countryInfoJSON?username=hqms');
+	curl_setopt($curl_init, CURLOPT_RETURNTRANSFER, 1);
+	$curl_res = curl_exec($curl_init) ;
+
+	$country_list = json_decode($curl_res);
+
+	foreach ($country_list->geonames as $country ) {
+		$_country[]= array($country->geonameId,$country->countryName);
+	}
+
+    // country
+    $form->addSelectList('country_id', __('Country'), $_country,'','onchange="javascript:loadCity($(this).val(), \'#city_id\');"');
+
+	$form->addSelectList('city_id', __('City'), array());
     // member postal
     $form->addTextField('text', 'memberPostal', __('Postal Code'), $rec_d['postal_code'], 'style="width: 60%;"');
     // member mail address
@@ -415,18 +428,16 @@ if (isset($_POST['detail']) OR (isset($_GET['action']) AND $_GET['action'] == 'd
     if (isset($member_custom_fields)) {
         if (is_array($member_custom_fields) && $member_custom_fields) {
             foreach ($member_custom_fields as $fid => $cfield) {
-
                 // custom field properties
                 $cf_dbfield = $cfield['dbfield'];
                 $cf_label = $cfield['label'];
                 $cf_default = $cfield['default'];
                 $cf_data = (isset($cfield['data']) && $cfield['data'])?$cfield['data']:array();
-
                 // custom field processing
                 if (in_array($cfield['type'], array('text', 'longtext', 'numeric'))) {
                     $cf_max = isset($cfield['max'])?$cfield['max']:'200';
                     $cf_width = isset($cfield['width'])?$cfield['width']:'50';
-                    $form->addTextField( ($cfield['type'] == 'longtext')?'textarea':'text', $cf_dbfield, $cf_label, isset($rec_d[$cf_dbfield])?$rec_d[$cf_dbfield]:$cf_default, 'style="width: '.$cf_width.'%;" maxlength="'.$cf_max.'"');
+                    $form->addTextField(($cfield['type'] == 'longtext')?'textarea':'text', $cf_dbfield, $cf_label, isset($rec_d[$cf_dbfield])?$rec_d[$cf_dbfield]:$cf_default, 'style="width: ' . $cf_width . '%;" maxlength="' . $cf_max . '"');
                 } else if ($cfield['type'] == 'dropdown') {
                     $form->addSelectList($cf_dbfield, $cf_label, $cf_data, isset($rec_d[$cf_dbfield])?$rec_d[$cf_dbfield]:$cf_default);
                 } else if ($cfield['type'] == 'checklist') {
@@ -439,43 +450,40 @@ if (isset($_POST['detail']) OR (isset($_GET['action']) AND $_GET['action'] == 'd
             }
         }
     }
-
     // member is_pending
-    $form->addCheckBox('isPending', __('Pending Membership'), array( array('1', __('Yes')) ), $rec_d['is_pending']);
+    $form->addCheckBox('isPending', __('Pending Membership'), array(array('1', __('Yes'))), $rec_d['is_pending']);
     // member photo
     $str_input = '';
     if ($rec_d['member_image']) {
-        $str_input = '<a href="'.SWB.'images/persons/'.$rec_d['member_image'].'" target="_blank"><strong>'.$rec_d['member_image'].'</strong></a><br />';
+        $str_input = '<a href="' . SWB . 'images/persons/' . $rec_d['member_image'] . '" target="_blank"><strong>' . $rec_d['member_image'] . '</strong></a><br />';
     }
     $str_input .= simbio_form_element::textField('file', 'image');
-    $str_input .= ' '.__('Maximum').' '.$sysconf['max_image_upload'].' KB';
-    $str_input .= '<p>'.__('or take a photo').'</p>';
+    $str_input .= ' ' . __('Maximum') . ' ' . $sysconf['max_image_upload'] . ' KB';
+    $str_input .= '<p>' . __('or take a photo') . '</p>';
     $str_input .= '<textarea id="base64picstring" name="base64picstring" style="display: none;"></textarea>';
     $str_input .= '<object id="flash_video" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" height="280px" width="100%">';
-    $str_input .= '<param name="src" value="'.SWB.'lib/flex/ShotSLiMSMemberPicture.swf"/>';
-    $str_input .= '<embed name="src" src="'.SWB.'lib/flex/ShotSLiMSMemberPicture.swf" height="280px" width="100%"/>';
+    $str_input .= '<param name="src" value="' . SWB . 'lib/flex/ShotSLiMSMemberPicture.swf"/>';
+    $str_input .= '<embed name="src" src="' . SWB . 'lib/flex/ShotSLiMSMemberPicture.swf" height="280px" width="100%"/>';
     $str_input .= '</object>';
     $form->addAnything(__('Photo'), $str_input);
-    
     // member email
     $form->addTextField('text', 'memberEmail', __('E-mail'), $rec_d['member_email'], 'style="width: 40%;"');
     // member password
     $form->addTextField('password', 'memberPasswd', __('New Password'), null, 'style="width: 40%;"');
     // member password confirmation
     $form->addTextField('password', 'memberPasswd2', __('Confirm New Password'), null, 'style="width: 40%;"');
-
     // edit mode messagge
     if ($form->edit_mode) {
         echo '<div class="infoBox" style="overflow: auto;">'
-            .'<div style="float: left; width: 80%;">'.__('You are going to edit member data').' : <b>'.$rec_d['member_name'].'</b> <br />'.__('Last Updated').' '.$rec_d['last_update'].' '.$expired_message
-            .'<div>'.__('Leave Password field blank if you don\'t want to change the password').'</div>'
-            .'</div>';
-            if ($rec_d['member_image']) {
-                if (file_exists(IMGBS.'persons/'.$rec_d['member_image'])) {
-                    echo '<div style="float: right;"><img src="../lib/phpthumb/phpThumb.php?src=../../images/persons/'.urlencode($rec_d['member_image']).'&w=53&timestamp='.date('his').'" style="border: 1px solid #999999" /></div>';
-                }
+         . '<div style="float: left; width: 80%;">' . __('You are going to edit member data') . ' : <b>' . $rec_d['member_name'] . '</b> <br />' . __('Last Updated') . ' ' . $rec_d['last_update'] . ' ' . $expired_message
+         . '<div>' . __('Leave Password field blank if you don\'t want to change the password') . '</div>'
+         . '</div>';
+        if ($rec_d['member_image']) {
+            if (file_exists(IMGBS . 'persons/' . $rec_d['member_image'])) {
+                echo '<div style="float: right;"><img src="../lib/phpthumb/phpThumb.php?src=../../images/persons/' . urlencode($rec_d['member_image']) . '&w=53&timestamp=' . date('his') . '" style="border: 1px solid #999999" /></div>';
             }
-        echo '</div>'."\n";
+        }
+        echo '</div>' . "\n";
     }
     // print out the form object
     echo $form->printOut();
@@ -484,57 +492,53 @@ if (isset($_POST['detail']) OR (isset($_GET['action']) AND $_GET['action'] == 'd
     // table spec
     $table_spec = 'member AS m
         LEFT JOIN mst_member_type AS mt ON m.member_type_id=mt.member_type_id';
-
     // create datagrid
     $datagrid = new simbio_datagrid();
     if ($can_read AND $can_write) {
         $datagrid->setSQLColumn('m.member_id',
-            'm.member_id AS \''.__('Member ID').'\'',
-            'm.member_name AS \''.__('Member Name').'\'',
-            'mt.member_type_name AS \''.__('Membership Type').'\'',
-            'm.member_email AS \''.__('E-mail').'\'',
-            'm.last_update AS \''.__('Last Updated').'\'');
+            'm.member_id AS \'' . __('Member ID') . '\'',
+            'm.member_name AS \'' . __('Member Name') . '\'',
+            'mt.member_type_name AS \'' . __('Membership Type') . '\'',
+            'm.member_email AS \'' . __('E-mail') . '\'',
+            'm.last_update AS \'' . __('Last Updated') . '\'');
     } else {
-        $datagrid->setSQLColumn('m.member_id AS \''.__('Member ID').'\'',
-            'm.member_name AS \''.__('Member Name').'\'',
-            'mt.member_type_name AS \''.__('Membership Type').'\'',
-            'm.member_email AS \''.__('E-mail').'\'',
-            'm.last_update AS \''.__('Last Updated').'\'');
+        $datagrid->setSQLColumn('m.member_id AS \'' . __('Member ID') . '\'',
+            'm.member_name AS \'' . __('Member Name') . '\'',
+            'mt.member_type_name AS \'' . __('Membership Type') . '\'',
+            'm.member_email AS \'' . __('E-mail') . '\'',
+            'm.last_update AS \'' . __('Last Updated') . '\'');
     }
     $datagrid->setSQLorder('member_name ASC');
-
     // is there any search
     $criteria = 'm.member_id IS NOT NULL ';
     if (isset($_GET['keywords']) AND $_GET['keywords']) {
-       $keywords = $dbs->escape_string($_GET['keywords']);
-       $criteria .= " AND (m.member_name LIKE '%$keywords%' OR m.member_id LIKE '%$keywords%') ";
+        $keywords = $dbs->escape_string($_GET['keywords']);
+        $criteria .= " AND (m.member_name LIKE '%$keywords%' OR m.member_id LIKE '%$keywords%') ";
     }
     if (isset($_GET['expire'])) {
-        $criteria .= " AND TO_DAYS('".date('Y-m-d')."')>TO_DAYS(m.expire_date)";
+        $criteria .= " AND TO_DAYS('" . date('Y-m-d') . "')>TO_DAYS(m.expire_date)";
     }
     $datagrid->setSQLCriteria($criteria);
-
     // set table and table header attributes
-    $datagrid->icon_edit = SWB.'admin/'.$sysconf['admin_template']['dir'].'/'.$sysconf['admin_template']['theme'].'/edit.gif';
+    $datagrid->icon_edit = SWB . 'admin/' . $sysconf['admin_template']['dir'] . '/' . $sysconf['admin_template']['theme'] . '/edit.gif';
     $datagrid->table_name = 'memberList';
     $datagrid->table_attr = 'align="center" id="dataList" cellpadding="5" cellspacing="0"';
     $datagrid->table_header_attr = 'class="dataListHeader" style="font-weight: bold;"';
     // set delete proccess URL
     $datagrid->chbox_form_URL = $_SERVER['PHP_SELF'];
-
     // put the result into variables
     $datagrid_result = $datagrid->createDataGrid($dbs, $table_spec, 20, ($can_read AND $can_write));
     if ((isset($_GET['keywords']) AND $_GET['keywords']) OR isset($_GET['expire'])) {
         echo '<div class="infoBox">';
         if (isset($_GET['expire'])) {
-            echo '<b style="color: #FF0000;">'.__('Expired Member List').'</b><hr size="1" />';
-            echo '<div><input type="button" value="'.__('Extend Selected Member(s)').'" onclick="javascript: if (confirm(\''.__('Are you sure to EXTEND membership for selected members?').'\')) { $(\'#mainContent\').simbioAJAX(\''.MWB.'membership/index.php?expire=1\', { method: \'post\', addData: $(\'#memberList\').serialize() + \'&batchExtend=true\' } ); }" class="button" /></div>';
+            echo '<b style="color: #FF0000;">' . __('Expired Member List') . '</b><hr size="1" />';
+            echo '<div><input type="button" value="' . __('Extend Selected Member(s)') . '" onclick="javascript: if (confirm(\'' . __('Are you sure to EXTEND membership for selected members?') . '\')) { $(\'#mainContent\').simbioAJAX(\'' . MWB . 'membership/index.php?expire=1\', { method: \'post\', addData: $(\'#memberList\').serialize() + \'&batchExtend=true\' } ); }" class="button" /></div>';
             if (isset($_GET['numExtended']) AND $_GET['numExtended'] > 0) {
-                echo '<div><strong>'.$_GET['numExtended'].'</strong> '.__('members extended!').'</div>'; //mfc
+                echo '<div><strong>' . $_GET['numExtended'] . '</strong> ' . __('members extended!') . '</div>'; //mfc
             }
         }
         if (isset($_GET['keywords']) AND $_GET['keywords']) {
-            echo __('Found').' '.$datagrid->num_rows.' '.__('from your search with keyword').' : "'.$_GET['keywords'].'"'; //mfc
+            echo __('Found') . ' ' . $datagrid->num_rows . ' ' . __('from your search with keyword') . ' : "' . $_GET['keywords'] . '"'; //mfc
         }
         echo '</div>';
     }

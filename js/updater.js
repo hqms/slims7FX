@@ -141,3 +141,24 @@ var ucsUpdate = function(strURLHandler, strData) {
       success: function(data, textStatus, jqXHR) {  alert('UCS record(s) updated'); }
       });
 }
+
+
+/**
+ *
+ * Load city from http://api.geonames.org/childrenJSON to city_selector_id Element.
+ *
+ * @param integer geocodeCountryID
+ * @param string city_selector_id
+ * @return void
+ **/
+function loadCity(geocodeCountryId, city_selector_id){
+	$.get("http://api.geonames.org/childrenJSON?geonameId="+geocodeCountryId+"&username=hqms",
+			function(data){
+			$(city_selector_id).empty();
+				$.each(data.geonames, function(index, value){
+					$(city_selector_id).append($('<option></option>').val(value.geonameId).html(value.name));
+				});
+			},
+			"json");
+
+}
