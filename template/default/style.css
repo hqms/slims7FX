@@ -1,5 +1,4 @@
 body{
-    padding-top: 50px;
     position: relative;
 	background-color:#F5F5F5;
 }
@@ -42,4 +41,19 @@ hr {
 	height: 135px;
 	width: 90px;
 	margin-bottom: 20px;
+}
+
+.top-margin{
+	padding-top: 50px;
+}
+
+.gmd-label{
+	float: left;
+	position:relative;
+}
+
+.gmd-label span{
+	position: absolute;
+	left: -45px;
+	width: 40px;
 }

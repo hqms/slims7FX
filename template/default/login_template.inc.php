@@ -29,7 +29,12 @@ if (!defined('INDEX_AUTH')) {
 	});
 </script>
  </head>
+
 <body id="login-page">
+
+<div class="visible-desktop">
+	<div class="top-margin">&nbsp;</div>
+</div>
 <?php echo $main_content; ?>
 </body>
 </html>

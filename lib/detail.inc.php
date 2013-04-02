@@ -153,7 +153,7 @@ class detail extends content_list
                 $this->record_detail['image'] = '<img src="./lib/phpthumb/phpThumb.php?src='.$sysconf['tg']['relative_url'].'images/docs/'.urlencode($this->record_detail['image']).'&w=200" border="0" />';
             }
         } else {
-            $this->record_detail['image'] = '<img src="./images/default/image.png" border="0" />';
+            $this->record_detail['image'] = '<img src="template/default/images/nobook.png" border="0" />';
         }
 
         // get the authors data
@@ -477,7 +477,7 @@ class detail extends content_list
         $_xml_output .= '<dc:subject>'.$this->record_detail['classification'].'</dc:subject>';
 
         // Permalink
-        $_xml_output .= '<dc:identifier><![CDATA[http://'.$_SERVER['SERVER_NAME'].SWB.'index.php?p=show_detail&id='.$this->detail_id.']]></dc:identifier>';        
+        $_xml_output .= '<dc:identifier><![CDATA[http://'.$_SERVER['SERVER_NAME'].SWB.'index.php?p=show_detail&id='.$this->detail_id.']]></dc:identifier>';
 
         // ISBN/ISSN
         $_xml_output .= '<dc:identifier>'.str_replace(array('-', ' '), '', $this->record_detail['isbn_issn']).'</dc:identifier>';

@@ -120,7 +120,7 @@ $social = array (
 			$('#simply-search').toggle();
 		});
 
-		$('a[rel=tooltip]').tooltip();
+		$('a[rel=tooltip], div[rel=tooltip]').tooltip();
 		$('a[rel=popover]').mouseenter(function(){
 			$(this).popover('show');
 		});
@@ -136,6 +136,9 @@ $social = array (
 </head>
 
 <body>
+<div class="visible-desktop">
+	<div class="top-margin">&nbsp;</div>
+</div>
 <div class="navbar navbar-inverse navbar-fixed-top ">
     <div class="navbar-inner">
     <div  class="container-fluid">
