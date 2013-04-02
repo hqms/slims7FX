@@ -24,7 +24,7 @@
 // be sure that this file not accessed directly
 if (!defined('INDEX_AUTH')) {
     die("can not access this file directly");
-} elseif (INDEX_AUTH != 1) { 
+} elseif (INDEX_AUTH != 1) {
     die("can not access this file directly");
 }
 
@@ -216,11 +216,11 @@ class simbio_table
      */
     public function printTable()
     {
-        $_buffer = '<table '.$this->table_attr.'>'."\n";
+        $_buffer = '<table '.$this->table_attr.'  >'."\n";
 
         // check if the array have a records
         if (count($this->table_row) < 1) {
-            $_buffer .= '<tr><td align="center" style="color: red; background-color: #CCCCCC;">'.__('No Data').'</td></tr>';
+            $_buffer .= '<tr class="warning"><td align="center" style="color: red;" >'.__('No Data').'</td></tr>';
         } else {
             // set header style if exist
             $this->setCellAttr(0, null, $this->table_header_attr);

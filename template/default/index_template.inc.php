@@ -50,20 +50,19 @@ if (isset($_GET['p']))
 ----------------------------------------------------*/
 $menus = array (
   'home'   => array('url'  => 'index.php',
-        'text' => __('Home')
+        'text' => __('Home'),
+        'icon'=>'icon-home',
        ),
   'libinfo'  => array('url'  => 'index.php?p=libinfo',
-        'text' => __('Library Information')
+  	'text' => __('Library Information'),
+  	'icon'=>'icon-info-sign',
+
        ),
   'help'   => array('url'  => 'index.php?p=help',
-        'text' => __('Help on Search')
+  	'text' => __('Help on Search'),
+  	'icon'=>'icon-question-sign',
        ),
-  'member'   => array('url'  => 'index.php?p=member',
-        'text' => __('Member Area')
-       ),
-  'login'   => array('url'  => 'index.php?p=login',
-        'text' => __('Librarian LOGIN')
-       )
+
 );
 
 /*----------------------------------------------------
@@ -99,6 +98,9 @@ $social = array (
  <meta name="robots" content="index, nofollow">
  <!-- load style -->
  <link rel="shortcut icon" href="webicon.ico" type="image/x-icon" />
+ <link href="<?php echo SWB; ?>template/default/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css" />
+ <link href="<?php echo SWB; ?>template/default/bootstrap/css/bootstrap-responsive.css" rel="stylesheet" type="text/css" />
+
  <link href="template/core.style.css" rel="stylesheet" type="text/css" />
  <link href="<?php echo $sysconf['template']['css']; ?>" rel="stylesheet" type="text/css" />
  <!--[if IE]>
@@ -110,64 +112,100 @@ $social = array (
  <script type="text/javascript" src="<?php echo JWB; ?>jquery.js"></script>
  <script type="text/javascript" src="<?php echo JWB; ?>form.js"></script>
  <script type="text/javascript" src="<?php echo JWB; ?>gui.js"></script>
+ <script type="text/javascript" src="<?php echo SWB; ?>template/default/bootstrap/js/bootstrap.js"></script>
+<script type="text/javascript">
+	$(function(){
+		$('#show_advance').click(function(){
+			$("#advance-search").slideToggle();
+			$('#simply-search').toggle();
+		});
 
+		$('a[rel=tooltip]').tooltip();
+		$('a[rel=popover]').mouseenter(function(){
+			$(this).popover('show');
+		});
+		$('a[rel=popover]').mouseleave(function(){
+			$(this).popover('hide');
+		});
+
+		$('#info-btn').click(function(){
+			$('#search-result').toggle();
+		});
+	});
+</script>
 </head>
 
 <body>
- <div id="masking"></div>
- <div id="content">
-  <div class="topic">
-   <div class="container_12">
-    <div class="language grid_5">
-        <form name="langSelect" action="index.php" method="get">
-      <?php echo __('Select Language'); ?>&nbsp;&nbsp;
-         <select name="select_lang"  onchange="document.langSelect.submit();">
+<div class="navbar navbar-inverse navbar-fixed-top ">
+    <div class="navbar-inner">
+    <div  class="container-fluid">
+		<a data-html="true" data-content="<img src='template/default/images/logo.png'><?php echo $sysconf['library_subname']; ?>" rel="popover"  data-placement="bottom" class="brand title" href="index.php" title="<?php echo $sysconf['library_name']; ?>"><?php echo $sysconf['library_name']; ?></a>
+    <ul class="nav">
+	    <ul class="nav">
+	     <?php foreach ($menus as $path => $menu) : ?>
+			<li><a href="<?php echo $menu['url']; ?>"   data-placement="bottom" rel="tooltip" title="<?php echo $menu['text']; ?>" <?php echo $p == $path?' class="active"' : ''; ?>><i class="icon icon-white <?php echo $menu['icon']?>"> </i></a></li>
+	     <?php endforeach ?>
+    </ul>
+    </ul>
+
+		<form name="langSelect" action="index.php" method="get"  class=" navbar-form pull-right ">
+          <select name="select_lang"  onchange="document.langSelect.submit();">
          <?php echo $language_select; ?>
          </select>
         </form>
-    </div>
-    <div class="treding grid_7">
-     <?php if(isset($social) && count($social) > 0) { ?>
-     <ul class="social">
-     <?php foreach ($social as $path => $menu) { ?>
-      <li><a href="<?php echo $menu['url']; ?>" title="<?php echo $menu['text']; ?>" <?php if ($p == $path) {echo ' class="active"';} ?>><?php echo $menu['text']; ?></a></li>
-     <?php } ?>
-     </ul>
-     <?php } ?>
-    </div>
-   </div>
-  </div>
+		<div class="pull-right ">
+			<ul class="nav">
+			 <?php if (utility::isMemberLogin()) : ?>
+			    <li><a data-toggle="dropdown" class="dropdown-toggle" href="#"><i class="icon icon-white icon-user"></i> Logged in as: <?php echo $_SESSION['m_name'] ?> <b class="caret"></b></a>
+   					<ul  class="dropdown-menu">
+						<li><a href="index.php?p=member">Dashboard</a></li>
+						<li><a href="index.php?p=member&logout=1">Logout</a></li>
+   					</ul>
+				</li>
+		    <?php else: ?>
+				<li><a title="" rel="tooltip" data-placement="bottom" href="index.php?p=member" data-original-title="Member Area"><i class="icon icon-white icon-user"> </i> Login</a></li>
+		    <?php endif ?>
 
-  <div class="logo">
-   <div class="container_12">
-    <div class="grid_4 title">
-     <div class="sitename"><a href="index.php" title="Home"><?php echo $sysconf['library_name']; ?></a></div>
-     <div class="subname"><?php echo $sysconf['library_subname']; ?></div>
-    </div>
-    <ul class="nav">
-     <?php foreach ($menus as $path => $menu) { ?>
-      <li><a href="<?php echo $menu['url']; ?>" title="<?php echo $menu['text']; ?>" <?php if ($p == $path) {echo ' class="active"';} ?>><?php echo $menu['text']; ?></a></li>
-     <?php } ?>
-    </ul>
-   </div>
-  </div>
+			<li><a title="" rel="tooltip" data-placement="bottom" href="index.php?p=login" data-original-title="Librarian LOGIN"><i class="icon icon-white icon-lock"> </i>Librarian </a></li>
 
-  <div class="content">
-   <div class="container_12">
-    <div class="grid_12 welcome">
-     <?php if(isset($_GET['search']) || isset($_GET['title']) || isset($_GET['keywords'])) { ?>
-     <div class="sidebar">
-      <div class="tagline">
-       <?php echo __('Information'); ?>
+				<li class="dropdown">
+					<a data-toggle="dropdown" class="dropdown-toggle" href="#"><i class="icon icon-white icon-comment"></i> Social <b class="caret"></b></a>
+					<ul  class="dropdown-menu">
+						<?php foreach ($social as $path => $menu) : ?>
+							<li><a href="<?php echo $menu['url']; ?>" title="<?php echo $menu['text']; ?>"><?php echo $menu['text']; ?></a></li>
+						<?php endforeach ?>
+					</ul>
+				</li>
+
+			</ul>
+
+		</div>
+		</div>
+    </div>
+</div>
+
+  <div class="container">
+    <div class="row">
+      <?php if(isset($_GET['search']) || isset($_GET['title']) || isset($_GET['keywords'])) { ?>
+     <div class="sidebar span3">
+         <div class="well" style="background: #fff;">
+
+	  <div class="">
+       <b><i class="icon icon-info-sign"></i><?php echo __('Information'); ?></b>
       </div>
-      <div class="info">
+
+      <div class=""  >
        <?php echo $info; ?>
       </div>
-    <?php if (utility::isMemberLogin()) { ?>
-    <div class="info">
-	    <?php echo $header_info; ?>
-    </div>	    
-    <?php } ?>
+ 		<?php if (utility::isMemberLogin()) : ?>
+		    <hr />
+	    <div class="">
+		    <b><i class="icon icon-user"></i> <?php echo __('User Login'); ?></b>
+	    </div>
+	    <div class="info">
+		    <?php echo $header_info; ?>
+	    </div>
+		<?php endif ?>
 
       <?php if ($sysconf['enable_search_clustering'] && !isset($_GET['fromcluster'])) { ?>
       <div class="tagline">
@@ -184,36 +222,51 @@ $social = array (
            }
          });
         });
-       </script>
-      <?php } ?>
+       </script>  <?php } ?>
+     </div>
      </div>
 
-    <div class="section">
-	    <div class="tagline">
+
+    <div class="section span9">
+    <div class="well" style="background: #fff;">
+	    <div class="pull-right" >
+		<a href="javascript: history.back();" class="back to_right label" title="Back to previous page"> <i class="icon icon-chevron-left"></i> </a>
+		<a  id="info-btn" class="back to_right label"> <i class="icon icon-info-sign" title="Result Info"></i> </a>
+		<a href="javascript: history.back();" class="back to_right label" title="result in XML Format"> <i class="icon icon-chevron-left"></i><i class="icon icon-chevron-right"></i> </a>
+		 		</div>
+		<h3>
 		    <?php echo __('Collections'); ?>
-		    <a href="javascript: history.back();" class="back to_right"> <?php echo __('Back'); ?> </a>
-		    <br/>
-	    </div>
-	    <div class="search-result-info">
-		 <?php echo $search_result_info; ?>
-	    </div>
+	    </h3>
+		<div class="alert alert-info" id="search-result"> <button type="button" class="close" data-dismiss="alert">&times;</button>
+			 <?php echo $search_result_info; ?></div>
+
 	    <div class="result-search">
-		    <div id="simply-search">
-			<div class="simply" >
-			    <form name="advSearchForm" id="advSearchForm" action="index.php" method="get">
-			    <input type="hidden" name="search" value="Search" />
-			    <input type="text" name="keywords" id="keyword" placeholder="<?php echo __('Keyword'); ?>" x-webkit-speech="x-webkit-speech" />
-			    </form>
-			</div>
+		    <div  class="pull-right">
+		    	<a href="#myModal" role="button" class=" " data-toggle="modal"><?php echo __('Advanced Search'); ?></a>
 		    </div>
-		    <div id="advance-search" style="display:none;" >
-			<form name="advSearchForm" id="advSearchForm" action="index.php" method="get">
-		    <input type="hidden" name="search" value="Search" />				
+		    <div id="simply-search">
+			    <form name="advSearchForm" id="advSearchForm" action="index.php" method="get" class="form-search">
+			 <div class="input-append">
+			    <input type="hidden" name="search" value="Search"  />
+			    <input type="text" name="keywords" id="keyword" placeholder="<?php echo __('Keyword'); ?>" x-webkit-speech="x-webkit-speech" class="span4 search-query offset2" <?php echo empty($_REQUEST['keywords']) ? '': 'value="'.$_REQUEST['keywords'].'"' ?> />
+			     <button type="submit" class="btn">Search</button>
+			</div>
+			    </form>
+		    </div>
+
+				<form name="advSearchForm" id="advSearchForm" action="index.php" method="get">
+	<div class="modal hide fade" id="myModal">
+		 <div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			<h3><?php echo __('Advanced Search'); ?></h3>
+		</div>
+ 		<div class="modal-body">
+		    <input type="hidden" name="search" value="Search" />
 			<div class="simply" >
 			    <input type="text" name="title" id="title" placeholder="Title" />
 			</div>
 			<div class="advance">
-			<table width="100%">
+			<table class="table">
 				<tr>
 					<td class="value">
 					<?php echo __('Author(s)'); ?>
@@ -221,6 +274,8 @@ $social = array (
 					<td class="value">
 					<?php echo $advsearch_author; ?>
 					</td>
+				</tr>
+				<tr>
 					<td class="value">
 					<?php echo __('Subject(s)'); ?>
 					</td>
@@ -235,7 +290,10 @@ $social = array (
 					<td class="value">
 						<input type="text" name="isbn" />
 					</td>
-					<td class="value">
+
+				</tr>
+				<tr>
+				<td class="value">
 						<?php echo __('GMD'); ?>
 					</td>
 					<td class="value">
@@ -253,6 +311,8 @@ $social = array (
 						<?php echo $colltype_list; ?>
 						</select>
 					</td>
+				</tr>
+				<tr>
 					<td class="value">
 						<?php echo __('Location'); ?>
 					</td>
@@ -262,177 +322,99 @@ $social = array (
 						</select>
 					</td>
 				</tr>
-				<tr>
-					<td colspan="4" class="value" style="text-align:center;">
-					    <input type="submit" name="search" value="<?php echo __('Search'); ?>" class="searchButton" />
-					</td>
-				</tr>
+
 			</table>
 			</div>
-			</form>
 		    </div>
-		    <div id="show_advance">
-			    <a href="#"><?php echo __('Advanced Search'); ?></a>
+		     <div class="modal-footer">
+					    <input type="submit" name="search" value="<?php echo __('Search'); ?>" class="btn btn-info" />
+ </div>
 		    </div>
+		    			</form>
+
+
 	    </div>
 	    <div class="collections-list">
 		    <?php echo $main_content; ?>
-		    <div class="clear">&nbsp;</div>
 	    </div>
     </div>
+    </div>		    <div class="clearfix">&nbsp;</div>
+
     <?php } elseif($p == 'member') { ?>
-    <div class="sidebar">
-	    <div class="tagline">
-		    <?php echo __('Information'); ?>
-		    <a href="javascript: history.back();" class="back to_right"> <?php echo __('Back'); ?> </a>
+    <div class="sidebar span3  ">
+	    <div class="well" style="background: white;">
+		<div class="">
+		    <i class="icon icon-info-sign"></i><b><?php echo __('Information'); ?></b>
+		    <a class="pull-right" href="javascript: history.back();"  title=" <?php echo __('Back'); ?> "><i class="icon-chevron-left"></i></a>
 	    </div>
 	    <div class="info">
 		    <?php echo $info; ?>
 	    </div>
-	    <?php if (utility::isMemberLogin()) { ?>	    
-	    <div class="tagline">
-		    <?php echo __('User Login'); ?>
+	    <?php if (utility::isMemberLogin()) { ?>
+	    <hr />
+	    <div class="">
+		    <b><i class="icon icon-user"></i> <?php echo __('User Login'); ?></b>
 	    </div>
 	    <div class="info">
 		    <?php echo $header_info; ?>
 	    </div>
 	    <?php } ?>
-    </div>
-    <div class="section">
-	    <div class="collections-list">
-		    <?php echo $main_content; ?>
-		    <div class="clear">&nbsp;</div>
 	    </div>
     </div>
+    <div class="section  span9 ">
+	    <div class="collections-list well" style="background: white;">
+		    <?php echo $main_content; ?>
+		    &nbsp;</div>
+	    </div>
+    </div><div class="clearfix">
     <?php } elseif(isset($_GET['p'])) { ?>
       <?php if ($_GET['p'] == 'show_detail') {
 			    echo $main_content;
 	    } else {
 	    ?>
-		    <div class="tagline">
+	    <div class="span8 offset2">
+	    <div class="well " style="background: #fff;">
+		    			    <a href="javascript: history.back();" class="back to_right"> <?php echo __('Back'); ?> </a>
+		    <h3 class="tagline">
 			    <?php echo $page_title; ?>
-			    <a href="javascript: history.back();" class="back to_right"> <?php echo __('Back'); ?> </a>
-		    </div>
+		    </h3>
 		    <?php if (utility::isMemberLogin()) { ?>
 		    <div class="search-result-info">
 			    <?php echo $header_info; ?>
-		    </div>	    
+		    </div>
 		    <?php } ?>
 		    <div class="section page">
 			    <div class="collection-detail">
 				    <div class="content-padding"><?php echo $main_content; ?></div>
-				    <div class="clear">&nbsp;</div>
 			    </div>
 		    </div>
+		    </div></div>
+			<div class="clearfix">&nbsp;</div>
+
 	    <?php } ?>
     <?php } else { ?>
     <div class="tagline">
 	    <?php echo $info; ?>
     </div>
-    <?php if (utility::isMemberLogin()) { ?>	    
-    <div class="search-result-info">
-	    <?php echo $header_info; ?>
-    </div>	    
-    <?php } ?>
-    
-    <div class="search">
-	    <div id="simply-search">
-			<div class="simply" >
-			    <form name="advSearchForm" id="advSearchForm" action="index.php" method="get">
-			    <input type="hidden" name="search" value="Search" />
-			    <input type="text" name="keywords" id="keyword" placeholder="<?php echo __('Keyword'); ?>" x-webkit-speech="x-webkit-speech" />
-			    </form>
-			</div>
-	    </div>
-	    <div id="advance-search" style="display:none;" >
-		<form name="advSearchForm" id="advSearchForm" action="index.php" method="get">
-	    <input type="hidden" name="search" value="Search" />				
-	
-		<div class="simply" >
-		    <input type="text" name="title" id="title" placeholder="<?php echo __('Title'); ?>" />
-		</div>
-		<div class="advance">
-		<table width="100%">
-			<tr>
-				<td class="value">
-				<?php echo __('Author(s)'); ?>
-				</td>
-				<td class="value">
-				<?php echo $advsearch_author; ?>
-				</td>
-				<td class="value">
-				<?php echo __('Subject(s)'); ?>
-				</td>
-				<td class="value">
-				<?php echo $advsearch_topic; ?>
-				</td>
-			</tr>
-			<tr>
-				<td class="value">
-				<?php echo __('ISBN/ISSN'); ?>
-				</td>
-				<td class="value">
-					<input type="text" name="isbn" />
-				</td>
-				<td class="value">
-					<?php echo __('GMD'); ?>
-				</td>
-				<td class="value">
-					<select name="gmd">
-					<?php echo $gmd_list; ?>
-					</select>
-				</td>
-			</tr>
-			<tr>
-				<td class="value">
-					<?php echo __('Collection Type'); ?>
-				</td>
-				<td class="value">
-					<select name="colltype">
-					<?php echo $colltype_list; ?>
-					</select>
-				</td>
-				<td class="value">
-					<?php echo __('Location'); ?>
-				</td>
-				<td class="value">
-					<select name="location">
-					<?php echo $location_list; ?>
-					</select>
-				</td>
-			</tr>
-			<tr>
-				<td colspan="4" class="value" style="text-align:center;">
-				    <input type="submit" name="search" value="<?php echo __('Search'); ?>" class="searchButton" />
-				</td>
-			</tr>
-		</table>
-		</div>
-		</form>
-	    </div>
-	    <div id="show_advance">
-		    <a href="#"><?php echo __('Advanced Search'); ?></a>
-	    </div>
+
+
+	<div class="span6 offset3">
+ 		<?php include_once('search_form.inc.php'); ?>
     </div>
     <?php } ?>
-</div>
-</div>
-</div>
-  <div class="footer">
-   <div class="container_12">
-    <div class="grid_6 lisence">
-     This software and this template are released Under GNU GPL License Version 3
-    </div>
-    <div class="grid_5 oss">
-     The Winner in the Category of OSS Indonesia ICT Award 2009
-    </div>
-   </div>
+ </div>
   </div>
 
- </div>
-
- <script type="text/javascript" src="<?php echo $sysconf['template']['dir'].'/'.$sysconf['template']['theme']; ?>/js/supersized.3.1.3.min.js"></script>
- <script type="text/javascript">
+<div class="navbar navbar-inverse navbar-fixed-bottom ">
+    <div class="navbar-inner">
+    	<div class="container">
+  	    	<small class="navbar-text">This software and this template are released Under GNU GPL License Version 3</small>
+ 	     	<small class="navbar-text pull-right">The Winner in the Category of OSS Indonesia ICT Award 2009</small>
+ 	     </div>
+    </div>
+  </div>
+ <!-- script type="text/javascript" src="<?php echo $sysconf['template']['dir'].'/'.$sysconf['template']['theme']; ?>/js/supersized.3.1.3.min.js"></script -->
+ <!-- script type="text/javascript">
  jQuery(function($){
   $.supersized(
   {
@@ -467,28 +449,18 @@ $social = array (
 	$(document).ready(function()
 	{
 		$('#keyword').keyup(function(){
-			$('#title').val();		
-			$('#title').val($('#keyword').val());		
+			$('#title').val();
+			$('#title').val($('#keyword').val());
 		});
 
 		$('#title').keyup(function(){
-			$('#keyword').val();		
-			$('#keyword').val($('#title').val());		
+			$('#keyword').val();
+			$('#keyword').val($('#title').val());
 		});
-		
+
 		$('#advSearchForm input').attr('autocomplete','off');
 		$('#title').attr('style','');
 
-		$('#show_advance').click(function(){
-		    if ($("#advance-search").is(":hidden"))
-		    {
-				$("#advance-search").slideDown();
-				$('#simply-search').hide();
-		    } else {
-				$("#advance-search").slideUp('fast');
-				$('#simply-search').show();
-		    }
-		});
 
 		$('#title').keypress(function(e){
 		    if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
@@ -496,8 +468,8 @@ $social = array (
 		    }
 		});
 	});
-	</script>
-	<script type="text/javascript" src="<?php echo $sysconf['template']['dir'].'/'.$sysconf['template']['theme']; ?>/js/adapt.min.js"></script>
+	</script -->
+	<!-- script type="text/javascript" src="<?php echo $sysconf['template']['dir'].'/'.$sysconf['template']['theme']; ?>/js/adapt.min.js"></script -->
 
 </body>
 </html>

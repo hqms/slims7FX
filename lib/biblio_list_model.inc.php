@@ -165,6 +165,7 @@ abstract class biblio_list_model
    *
    * @return  string
    */
+
   protected function makeOutput() {
     global $sysconf;
     // init the result buffer
@@ -173,7 +174,7 @@ abstract class biblio_list_model
     // loop data
     $_i = 0;
     if (!$this->resultset) {
-      return '<div class="errorBox">Query error : '.$this->query_error.'</div>';
+      return '<div class="alert alert-error">Query error : '.$this->query_error.'</div>';
     }
 
     while ($_biblio_d = $this->resultset->fetch_assoc()) {
@@ -212,17 +213,24 @@ abstract class biblio_list_model
         $images_loc = 'images/docs/'.$_biblio_d['image'];
         #$cache_images_loc = 'images/cache/'.$_biblio_d['image'];
         if ($sysconf['tg']['type'] == 'phpthumb') {
-          $_image_cover = '<img src="./lib/phpthumb/phpThumb.php?src='.$sysconf['tg']['relative_url'].''.$images_loc.'&w=90" width="90" height="115" />';
+          $_image_cover = '<img src="./lib/phpthumb/phpThumb.php?src='.$sysconf['tg']['relative_url'].''.$images_loc.'&w=115" width="115" height="135" />';
         } elseif ($sysconf['tg']['type'] == 'minigalnano') {
-          $_image_cover = '<img src="./lib/minigalnano/createthumb.php?filename='.$sysconf['tg']['relative_url'].''.$images_loc.'&width=90" width="90" height="115" />';
+          $_image_cover = '<img src="./lib/minigalnano/createthumb.php?filename='.$sysconf['tg']['relative_url'].''.$images_loc.'&width=115" width="115" height="135" />';
         } else {
-          $_image_cover = '<img src="./lib/phpthumb/phpThumb.php?src='.$sysconf['tg']['relative_url'].''.$images_loc.'&w=90" width="90" height="115" />';
+          $_image_cover = '<img src="./lib/phpthumb/phpThumb.php?src='.$sysconf['tg']['relative_url'].''.$images_loc.'&w=115" width="115" height="135" />';
         }
       }
 
       $_alt_list = ($_i%2 == 0)?'alterList':'alterList2';
-      $_buffer .= '<div class="item"><div class="cover-list">'.$_image_cover.'</div>';
-						$_buffer .= '<div class="detail-list"><h4>'.$_biblio_d['title'].'</h4>';
+
+      $_biblio_d['detail_button']= '';
+      $_check_mark = (utility::isMemberLogin() && $this->enable_mark)?' <input type="checkbox" id="biblioCheck'.$_i.'" name="biblio[]" class="biblioCheck" value="'.$_biblio_d['biblio_id'].'" style="margin: 0;" /> <label for="biblioCheck'.$_i.'" style="display:inline;">'.__('mark this').'</label>':'';
+
+      	$_buffer .= '<div class="item row-fluid "><div class="well"><div class="cover-list span2">'.$_image_cover.'</div>';
+		$_buffer .= '<div class="detail-list span10">';
+    	$_buffer .= '<div class="pull-right">'.$_biblio_d['detail_button'].' '.$_biblio_d['xml_button'].$_check_mark.'</div>';
+    	$_buffer .='<h4 style="margin-top: 0;">'.$_biblio_d['title'].'</h4>';
+		$_buffer .= '<small>'.$_biblio_d['notes'].'</small>';
       // concat author data
       $_authors = isset($_biblio_d['author'])?$_biblio_d['author']:self::getAuthors($this->obj_db, $_biblio_d['biblio_id']);
       if ($_authors) {
@@ -263,12 +271,15 @@ abstract class biblio_list_model
 			  			$_buffer .= '<div class="customField locationField"><b>'.$_field_opts[1].'</b> : '.$sysconf['node'][$_biblio_d['node_id']]['name'].'</div>';
 						}
         	}
+
     	}
+
 		}
 	  // checkbox for marking collection
-	  $_check_mark = (utility::isMemberLogin() && $this->enable_mark)?' <input type="checkbox" id="biblioCheck'.$_i.'" name="biblio[]" class="biblioCheck" value="'.$_biblio_d['biblio_id'].'" /> <label for="biblioCheck'.$_i.'">'.__('mark this').'</label>':'';
-      $_buffer .= '<div class="subItem">'.$_biblio_d['detail_button'].' '.$_biblio_d['xml_button'].$_check_mark.'</div>';
-      $_buffer .= "</div></div>\n";
+//      $_buffer .= '<div class="subItem">'.$_biblio_d['detail_button'].' '.$_biblio_d['xml_button'].$_check_mark.'</div>';
+      $_buffer .= "</div><div class=\"clearfix\"></div></div>\n";
+      $_buffer .='</div>';
+
       $_i++;
     }
 
@@ -284,13 +295,15 @@ abstract class biblio_list_model
 
 		$_biblio_list = '';
 		$_is_member_logged_in = utility::isMemberLogin() && $this->enable_mark;
-		if ($_paging) {
-			$_biblio_list .= $_paging;
-		}
+
 		if ($_is_member_logged_in) {
-			$_submit = '<div class="biblioMarkFormAction"><input type="submit" name="markBiblio" value="'.__('Put marked selection into basket').'" /></div>';
+			$_submit = '<div class="pull-right"><input type="submit" class="btn btn-success" name="markBiblio" value="'.__('Put marked selection into basket').'" /></div>';
 			$_biblio_list .= '<form class="biblioMarkForm" method="post" action="index.php?p=member#biblioBasket">';
 			$_biblio_list .= $_submit;
+			$_biblio_list .= '<div class="clearfix"></div>';
+		}
+  		if ($_paging) {
+			$_biblio_list .= $_paging;
 		}
 		$_biblio_list .= $_buffer;
 		if ($_is_member_logged_in) {
@@ -300,7 +313,7 @@ abstract class biblio_list_model
 		if ($_paging) {
 			$_biblio_list .= $_paging;
 		}
-    return $_biblio_list;
+    return '<hr/>'.$_biblio_list;
   }
 
 

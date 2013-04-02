@@ -24,7 +24,7 @@
 // be sure that this file not accessed directly
 if (!defined('INDEX_AUTH')) {
     die("can not access this file directly");
-} elseif (INDEX_AUTH != 1) { 
+} elseif (INDEX_AUTH != 1) {
     die("can not access this file directly");
 }
 
@@ -93,7 +93,8 @@ class simbio_paging
         $str_target_frame = 'target="'.$str_target_frame.'"';
 
         // init the return string
-        $_buffer = '<span class="pagingList">';
+        $_buffer = '<div class="pagination">';
+        $_buffer .= '<ul>';
         $_stopper = 1;
 
         // count the offset of paging
@@ -115,45 +116,41 @@ class simbio_paging
         }
 
         // Previous page link
-				$_first = __('First Page');
+				$_first = __('<i class="icon  icon-fast-backward"></i>');
 
-				$_prev = __('Previous');
+				$_prev = __('<i class="icon  icon-step-backward"></i>');
 
         if ($_page > 1) {
-            $_buffer .= ' &nbsp;';
-            $_buffer .= '<a href="'.$_current_page.(1).$str_fragment.'" '.$str_target_frame.' class="first_link">'.$_first.'</a>&nbsp; '."\n";
-            $_buffer .= ' &nbsp;';
-            $_buffer .= '<a href="'.$_current_page.($_page-1).$str_fragment.'" '.$str_target_frame.' class="prev_link">'.$_prev.'</a>&nbsp; '."\n";
+             $_buffer .= '<li><a href="'.$_current_page.(1).$str_fragment.'" '.$str_target_frame.' class="first_link">'.$_first.'</a></li> '."\n";
+             $_buffer .= '<li><a href="'.$_current_page.($_page-1).$str_fragment.'" '.$str_target_frame.' class="prev_link">'.$_prev.'</a></li> '."\n";
         }
 
         for ($p = $_pager_offset; ($p <= $_num_page_total) AND ($_stopper < $int_pages_each_set+1); $p++) {
             if ($p == $_page) {
-                $_buffer .= ' &nbsp;<b>'.$p.'</b>&nbsp; '."\n";
+                $_buffer .= ' <li class="active"><a href="#">'.$p.'</a></li>'."\n";
             } else {
-                $_buffer .= ' &nbsp;';
-                $_buffer .= '<a href="'.$_current_page.$p.$str_fragment.'" '.$str_target_frame.'>'.$p.'</a>&nbsp; '."\n";
+                 $_buffer .= '<li><a href="'.$_current_page.$p.$str_fragment.'" '.$str_target_frame.'>'.$p.'</a></li>'."\n";
             }
 
             $_stopper++;
         }
 
         // Next page link
-				$_next = __('Next');
+				$_next = __('<i class="icon  icon-step-forward"></i>');
 
         if (($_pager_offset != $_num_page_total-4) AND ($_page != $_num_page_total)) {
-            $_buffer .= ' &nbsp;';
-            $_buffer .= '<a href="'.$_current_page.($_page+1).$str_fragment.'" '.$str_target_frame.' class="next_link">'.$_next.'</a>&nbsp; '."\n";
+             $_buffer .= '<li><a href="'.$_current_page.($_page+1).$str_fragment.'" '.$str_target_frame.' class="next_link">'.$_next.'</a></li>'."\n";
         }
 
         // Last page link
-				$_last = __('Last Page');
+				$_last = __('<i class="icon  icon-fast-forward"></i>');
 
         if ($_page < $_num_page_total) {
-            $_buffer .= ' &nbsp;';
-            $_buffer .= '<a href="'.$_current_page.($_num_page_total).$str_fragment.'" '.$str_target_frame.' class="last_link">'.$_last.'</a>&nbsp; '."\n";
+            $_buffer .= '<li><a href="'.$_current_page.($_num_page_total).$str_fragment.'" '.$str_target_frame.' class="last_link">'.$_last.'</a></li>'."\n";
         }
 
-        $_buffer .= '</span>';
+        $_buffer .= '</ul>';
+        $_buffer .= '</div>';
 
         return $_buffer;
     }

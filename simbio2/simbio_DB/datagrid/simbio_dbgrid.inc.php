@@ -92,7 +92,7 @@ class simbio_datagrid extends simbio_table
 
         // check database connection
         if (!$obj_db OR $obj_db->error) {
-            $_error = '<div style="padding: 5px; margin: 3px; border: 1px dotted #FF0000; color: #FF0000;">';
+            $_error = '<div class="alert alert-error">';
             $_error .= 'ERROR : Cant create datagrid, database connection error!';
             $_error .= '</div>';
             return $_error;
@@ -170,7 +170,7 @@ class simbio_datagrid extends simbio_table
         $this->query_time = round($_end-$_start, 5);
         // if the query error
         if (!$this->grid_real_q OR $obj_db->error) {
-            $_error = '<div style="padding: 5px; margin: 3px; border: 1px dotted #FF0000; color: #FF0000;">';
+            $_error = '<div class="alert alert-error">';
             $_error .= 'ERROR<br />';
             $_error .= 'MySQL Server said : '.$obj_db->error.'';
             if ($this->debug) {
@@ -337,7 +337,7 @@ class simbio_datagrid extends simbio_table
      */
     protected function makeOutput($int_num2show = 30)
     {
-        // remove invisible fields
+         // remove invisible fields
         $this->removeInvisibleField();
         // get fields array and set the table header
         $this->setHeader($this->grid_result_fields);
@@ -535,5 +535,3 @@ class simbio_datagrid extends simbio_table
         $this->grid_result_rows = $_result_rows_buffer;
     }
 }
-
-?>

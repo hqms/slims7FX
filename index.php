@@ -40,7 +40,7 @@ if ($sysconf['template']['base'] == 'html') {
 // page title
 $page_title = $sysconf['library_name'].' | '.$sysconf['library_subname'].' :: OPAC';
 // default library info
-$info = __('Web Online Public Access Catalog - Use the search options to find documents quickly');
+$info = __('<b>Web Online Public Access Catalog.</b><br /><span style="font-size: .7em;">Use the search options to find documents quickly.</span>');
 // total opac result page
 $total_pages = 1;
 // default header info
@@ -49,7 +49,8 @@ $header_info = '';
 $metadata = '';
 // member login information
 if (utility::isMemberLogin()) {
-    $header_info .= '<div id="memberLoginInfo">'.__('You are currently Logged on as member').': <strong>'.$_SESSION['m_name'].' (<em>'.$_SESSION['m_email'].'</em>)</strong> <a id="memberLogout" href="index.php?p=member&logout=1">'.__('LOGOUT').'</a></div>';
+    $header_info .= '<div id="">'.__('You are currently Logged on as member').': <strong>'.$_SESSION['m_name'].' (<em>'.$_SESSION['m_email'].'</em>)</strong>
+  <p> <a id="memberLogout" href="index.php?p=member&logout=1"><i class="icon icon-lock"></i> '.__('Logout').'</a></p></div>';
 }
 
 // start the output buffering for main content
@@ -60,6 +61,7 @@ if (isset($_GET['p'])) {
     // some extra checking
     $path = preg_replace('@^(http|https|ftp|sftp|file|smb):@i', '', $path);
     $path = preg_replace('@\/@i','',$path);
+
     // check if the file exists
     if (file_exists(LIB.'contents/'.$path.'.inc.php')) {
         include LIB.'contents/'.$path.'.inc.php';

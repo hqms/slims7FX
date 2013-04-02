@@ -251,8 +251,8 @@ class biblio_list extends biblio_list_model
     }
 
     // init sql string
-    $_sql_str = 'SELECT SQL_CALC_FOUND_ROWS biblio.biblio_id, biblio.title, biblio.image, biblio.isbn_issn,
-			biblio.publish_year, pbl.publisher_name AS `publisher`, pplc.place_name AS `publish_place`, biblio.labels, biblio.input_date';
+    $_sql_str = 'SELECT SQL_CALC_FOUND_ROWS biblio.biblio_id, biblio.title, biblio.image, biblio.isbn_issn, biblio.notes,
+			biblio.publish_year, pbl.publisher_name AS `publisher`, pplc.place_name AS `publish_place`, biblio.labels, biblio.input_date, gmd.gmd_name, gmd.icon_image';
 
     // checking custom frontpage fields file
     $custom_frontpage_record_file = SB.$sysconf['template']['dir'].'/'.$sysconf['template']['theme'].'/custom_frontpage_record.inc.php';
@@ -270,6 +270,7 @@ class biblio_list extends biblio_list_model
     // additional SQL string
     $_add_sql_str = ' LEFT JOIN mst_publisher AS pbl ON biblio.publisher_id=pbl.publisher_id ';
     $_add_sql_str .= ' LEFT JOIN mst_place AS pplc ON biblio.publish_place_id=pplc.place_id ';
+  	$_add_sql_str .= ' LEFT JOIN mst_gmd as gmd ON biblio.gmd_id = gmd.gmd_id ';
 
     // location
     if ($this->criteria) {

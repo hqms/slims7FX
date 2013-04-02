@@ -23,7 +23,7 @@
 // be sure that this file not accessed directly
 if (!defined('INDEX_AUTH')) {
     die("can not access this file directly");
-} elseif (INDEX_AUTH != 1) { 
+} elseif (INDEX_AUTH != 1) {
     die("can not access this file directly");
 }
 
@@ -114,7 +114,9 @@ if (isset($_POST['logMeIn'])) {
     }
 }
 ?>
-<div id="loginForm">
+<div class="row">
+<div class="span4 offset4">
+<div id="loginForm" class="well" style="background:#fff;">
     <noscript>
         <div style="font-weight: bold; color: #FF0000;"><?php echo __('Your browser does not support Javascript or Javascript is disabled. Application won\'t run without Javascript!'); ?><div>
     </noscript>
@@ -144,10 +146,14 @@ if (isset($_POST['logMeIn'])) {
     <?php } ?>
     <!-- Captcha preloaded javascript - end -->
     <form action="index.php?p=login" method="post">
-    <div class="heading1">Username</div>
-    <div class="login_input"><input type="text" name="userName" id="userName" class="login_input" /></div>
-    <div class="heading1">Password</div>
-    <div class="login_input"><input type="password" name="passWord" class="login_input" /></div>
+    <h4>Login Form</h4>
+    <div class="input-prepend" rel="tooltip" title="Username" data-placement="right">
+    	<div class="add-on" ><i class="icon icon-user"></i></div>
+    	<input type="text" name="userName" id="userName" class="span3" />
+    </div>
+    <div class="input-prepend" rel="tooltip" title="Password" data-placement="right">
+    	<div class="add-on" ><i class="icon icon-asterisk"></i></div>
+    <input type="password" name="passWord" class="span3" /></div>
     <!-- Captcha in form - start -->
     <?php if ($sysconf['captcha']['smc']['enable']) { ?>
       <?php if ($sysconf['captcha']['smc']['type'] == "recaptcha") { ?>
@@ -159,7 +165,7 @@ if (isset($_POST['logMeIn'])) {
       ?>
       </div>
       <!-- <div><input type="text" name="captcha_code" id="captcha-form" style="width: 80%;" /></div> -->
-    <?php 
+    <?php
       } elseif ($sysconf['captcha']['smc']['type'] == "others") {
 
       }
@@ -169,10 +175,12 @@ if (isset($_POST['logMeIn'])) {
     <!-- Captcha in form - end -->
 
     <div class="marginTop">
-    <input type="submit" name="logMeIn" value="<?php echo __('Login'); ?>" class="loginButton" />
-    <input type="button" value="Home" class="homeButton" onclick="javascript: location.href = 'index.php';" />
+    <input type="submit" name="logMeIn" value="<?php echo __('Login'); ?>" class="btn btn-info" />
+    <input type="button" value="Home" class="btn " onclick="javascript: location.href = 'index.php';" />
     </div>
     </form>
+</div>
+</div>
 </div>
 <script type="text/javascript">jQuery('#userName').focus();</script>
 

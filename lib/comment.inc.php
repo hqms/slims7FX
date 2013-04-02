@@ -37,7 +37,7 @@ function showComment($_detail_id)
 		$_recs_each_page = 3;
 		$_pages_each_set = 10;
 		$_all_recs = 0;
-		
+
 		if (ISSET($_GET['page']) && $_GET['page']>1) {
 			$page = $_GET['page'];
 		} else {
@@ -56,7 +56,7 @@ function showComment($_detail_id)
 			$_page = ($page -1) * $_recs_each_page;
 			$_sql .= " Limit " . $_page. ", " . $_recs_each_page;
 			$commlist = $dbs->query($_sql);
-			$_list_comment .= '<div class="comment-found">'. $_all_recs . __(' comments available'). '</div>'; 
+			$_list_comment .= '<div class="comment-found">'. $_all_recs . __(' comments available'). '</div>';
 			While ($_data = $commlist->fetch_assoc()) {
 				$_list_comment .= '<div class="comment-member">'.$_data['member_name']. __(' at ') . $_data['input_date']. __(' write'). '</div>';
 				$_list_comment .= '<div class="comment-content">'. $_data['comment'] . '</div>';
@@ -67,8 +67,8 @@ function showComment($_detail_id)
 
 		if (ISSET($_SESSION['mid'])) {
 		// Comment form
-			$_forms = '<form method="post" action="index.php?p=show_detail&id='.$_detail_id.'">'.simbio_form_element::textField('textarea','comment','Add your comment','class="comment-input"'). '<br />';
-			$_forms .= '<input type="submit" name="SaveComment" value="Save comment" class="button">';
+			$_forms = '<form method="post" action="index.php?p=show_detail&id='.$_detail_id.'">'.simbio_form_element::textField('textarea','comment','','placeholder="Add your comment" class="comment-input span6"'). '<br />';
+			$_forms .= '<input type="submit" name="SaveComment" value="Save comment" class="btn btn-info">';
 			$_forms .= '</form>';
 			return $_list_comment.$_forms;
 		} else  {

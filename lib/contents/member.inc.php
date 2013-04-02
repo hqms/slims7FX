@@ -62,7 +62,7 @@ if (isset($_POST['logMeIn']) && !$is_member_login) {
     $password = trim(strip_tags($_POST['memberPassWord']));
     // check if username or password is empty
     if (!$username OR !$password) {
-        echo '<div class="errorBox">'.__('Please fill your Username and Password to Login!').'</div>';
+        echo '<div class="errorBox alert alert-error">'.__('Please fill your Username and Password to Login!').'</div>';
     } else {
         # <!-- Captcha form processing - start -->
         if ($sysconf['captcha']['member']['enable']) {
@@ -102,7 +102,7 @@ if (isset($_POST['logMeIn']) && !$is_member_login) {
             // write log
             utility::writeLogs($dbs, 'member', $username, 'Login', 'Login FAILED for member '.$username.' from address '.$_SERVER['REMOTE_ADDR']);
             // message
-            $msg = '<div class="errorBox">'.__('Login FAILED! Wrong username or password!').'</div>';
+            $msg = '<div class="errorBox alert alert-error">'.__('Login FAILED! Wrong username or password!').'</div>';
             simbio_security::destroySessionCookie($msg, MEMBER_COOKIES_NAME, SWB, false);
         }
     }
@@ -115,10 +115,10 @@ if (!$is_member_login) {
 	<?php
 	// captcha invalid warning
 	if (isset($_GET['captchaInvalid']) && $_GET['captchaInvalid'] === 'true') {
-		echo '<div class="errorBox">'.__('Wrong Captcha Code entered, Please write the right code!').'</div>';
+		echo '<div class="errorBox alert alert-error">'.__('Wrong Captcha Code entered, Please write the right code!').'</div>';
 	}
 	?>
-    <div class="loginInfo"><?php echo __('Please insert your member ID and password given by library system administrator. If you are library\'s member and don\'t have a password yet, please contact library staff.'); ?></div>
+    <div class="loginInfo alert alert-success"><?php echo __('Please insert your member ID and password given by library system administrator. If you are library\'s member and don\'t have a password yet, please contact library staff.'); ?></div>
     <!-- Captcha preloaded javascript - start -->
     <?php if ($sysconf['captcha']['member']['enable']) { ?>
       <?php if ($sysconf['captcha']['member']['type'] == "recaptcha") { ?>
@@ -144,15 +144,22 @@ if (!$is_member_login) {
       <?php } ?>
     <?php } ?>
     <!-- Captcha preloaded javascript - end -->
-    <div class="loginInfo">
-    <form action="index.php?p=member" method="post">
-    <div class="fieldLabel"><?php echo __('Member ID'); ?></div>
-        <div class="login_input"><input type="text" name="memberID" /></div>
-    <div class="fieldLabel marginTop"><?php echo __('Password'); ?></div>
-        <div  class="login_input"><input type="password" name="memberPassWord" /></div>
-    <!-- Captcha in form - start -->
+    <div class="row">
+	<div class="loginInfo alert alert-info span5 offset1">
+    <form action="index.php?p=member" method="post" class="form-horizontal">
+     <div class="control-group">
+    	<div class="control-label" for="memberID"><?php echo __('Member ID'); ?></div>
+        <div class="controls"><input type="text" name="memberID" /></div>
+    </div>
+     <div class="control-group">
+    	<div class="control-label" for="memberPassword"><?php echo __('Password'); ?></div>
+        <div  class="controls">
+        	<input type="password" name="memberPassWord" />
+    	</div>
+    </div>
     <div>
-    <?php if ($sysconf['captcha']['member']['enable']) { ?>
+       <!-- Captcha in form - start -->
+ <?php if ($sysconf['captcha']['member']['enable']) { ?>
       <?php if ($sysconf['captcha']['member']['type'] == "recaptcha") { ?>
       <div class="captchaMember">
       <?php
@@ -171,8 +178,15 @@ if (!$is_member_login) {
     } ?>
     </div>
     <!-- Captcha in form - end -->
-    <input type="submit" name="logMeIn" value="<?php echo __('Login'); ?>" class="memberButton" />
+    <div class="control-group">
+    	<div class="control-label">&nbsp;</div>
+    	<div class="controls">
+    		<input type="submit" name="logMeIn" value="<?php echo __('Login'); ?>" class="btn btn-info" />
+    	</div>
+	</div>
+
     </form>
+    </div>
     </div>
     </div>
 <?php
@@ -186,21 +200,21 @@ if (!$is_member_login) {
     {
         // show the member information
         $_form = '<form id="memberChangePassword" method="post" action="index.php?p=member">'."\n";
-        $_form .= '<table class="memberDetail" cellpadding="5" cellspacing="0">'."\n";
+        $_form .= '<table class="table table-hover" cellpadding="5" cellspacing="0">'."\n";
         $_form .= '<tr>'."\n";
-        $_form .= '<td class="key alterCell" width="20%"><strong>'.__('Current Password').'</strong></td>';
-        $_form .= '<td class="value alterCell2"><input type="password" name="currPass" /></td>';
+        $_form .= '<th width="20%">'.__('Current Password').'</th>';
+        $_form .= '<td ><input type="password" name="currPass" /></td>';
         $_form .= '</tr>'."\n";
         $_form .= '<tr>'."\n";
-        $_form .= '<td class="key alterCell" width="20%"><strong>'.__('New Password').'</strong></td>';
-        $_form .= '<td class="value alterCell2"><input type="password" name="newPass" /></td>';
+        $_form .= '<th>'.__('New Password').'</th>';
+        $_form .= '<td><input type="password" name="newPass" /></td>';
         $_form .= '</tr>'."\n";
         $_form .= '<tr>'."\n";
-        $_form .= '<td class="key alterCell" width="20%"><strong>'.__('Confirm Password').'</strong></td>';
-        $_form .= '<td class="value alterCell2"><input type="password" name="newPass2" /></td>';
+        $_form .= '<th><strong>'.__('Confirm Password').'</strong></th>';
+        $_form .= '<td ><input type="password" name="newPass2" /></td>';
         $_form .= '</tr>'."\n";
         $_form .= '<tr>'."\n";
-        $_form .= '<td class="alterCell2" colspan="2"><input type="submit" id="loginButton" name="changePass" value="'.__('Change Password').'" /></td>';
+        $_form .= '<td colspan="2"><input type="submit" id="loginButton" name="changePass" value="'.__('Change Password').'"  class="btn btn-success"/></td>';
         $_form .= '</tr>'."\n";
         $_form .= '</table>'."\n";
         $_form .= '</form>'."\n";
@@ -361,19 +375,19 @@ if (!$is_member_login) {
         $_loan_list->modifyColumnContent(0, '<input type="checkbox" name="basket[]" class="basketItem" value="{column_value}" />');
 
         // set table and table header attributes
-        $_loan_list->table_attr = 'align="center" class="memberBasketList" cellpadding="5" cellspacing="0"';
-        $_loan_list->table_header_attr = 'class="dataListHeader" style="font-weight: bold;"';
+        $_loan_list->table_attr = 'class="table table-hover"';
+        //$_loan_list->table_header_attr = 'class="dataListHeader" style="font-weight: bold;"';
         $_loan_list->using_AJAX = false;
         // return the result
         $_result = '<form name="memberBasketListForm" id="memberBasketListForm" action="index.php?p=member" method="post">'."\n";
         $_datagrid = $_loan_list->createDataGrid($dbs, $_table_spec, $num_recs_show);
         if ($_loan_list->num_rows > 0) {
-            $_actions = '<div class="memberBasketAction">';
-            $_actions .= '<a href="index.php?p=member" class="basket reserve">'.__('Reserve title(s) on Basket').'</a> :: ';
-            $_actions .= '<a href="index.php?p=member" class="basket clearAll" postdata="clear_biblio=1">'.__('Clear Basket').'</a> :: ';
-            $_actions .= '<a href="index.php?p=member" class="basket clear">'.__('Remove selected title(s) from Basket').'</a>';
+            $_actions = '<div class="pull-right" >';
+            $_actions .= '<a href="index.php?p=member" class="basket reserve label" rel="tooltip" data-placement="bottom" title="'.__('Reserve title(s) on Basket').'"><i class="icon  icon-shopping-cart"></i></a>&nbsp;';
+            $_actions .= '<a href="index.php?p=member" class="basket clearAll label" postdata="clear_biblio=1" title="'.__('Clear Basket').'" rel="tooltip" data-placement="bottom"><i class="icon  icon-trash"></i></a>&nbsp;';
+            $_actions .= '<a href="index.php?p=member" class="basket clear label" rel="tooltip" data-placement="bottom" title="'.__('Remove selected title(s) from Basket').'"><i class="icon icon-remove"></i></a>';
             $_actions .= '</div>';
-            $_result .= '<div class="memberBasketInfo">'.$_loan_list->num_rows.' '.__('title(s) on basket').$_actions.'</div>'."\n".$_datagrid;
+            $_result .= '<div class=""><b>'.$_loan_list->num_rows.' '.__('title(s) on basket').'</b>'.$_actions.'</div>'."\n".$_datagrid;
         }
 		$_result .= "\n</form>";
 
@@ -389,35 +403,35 @@ if (!$is_member_login) {
     function showMemberDetail()
     {
         // show the member information
-        $_detail = '<table class="memberDetail" cellpadding="5" cellspacing="0">'."\n";
+        $_detail = '<table class="table ">'."\n";
         // member notes and pending information
         if ($_SESSION['m_membership_pending'] || $_SESSION['m_is_expired']) {
             $_detail .= '<tr>'."\n";
             $_detail .= '<td class="key alterCell" width="15%"><strong>Notes</strong></td><td class="value alterCell2" colspan="3">';
             if ($_SESSION['m_is_expired']) {
-                $_detail .= '<div style="color: #f00;">'.__('Your Membership Already EXPIRED! Please extend your membership.').'</div>';
+                $_detail .= '<div class="alert alert-error">'.__('Your Membership Already EXPIRED! Please extend your membership.').'</div>';
             }
             if ($_SESSION['m_membership_pending']) {
-                $_detail .= '<div style="color: #f00;">'.__('Membership currently in pending state, no loan transaction can be made yet.').'</div>';
+                $_detail .= '<div  class="alert alert-error">'.__('Membership currently in pending state, no loan transaction can be made yet.').'</div>';
             }
             $_detail .= '</td>';
             $_detail .= '</tr>'."\n";
         }
         $_detail .= '<tr>'."\n";
-        $_detail .= '<td class="key alterCell" width="15%"><strong>'.__('Member Name').'</strong></td><td class="value alterCell2" width="30%">'.$_SESSION['m_name'].'</td>';
-        $_detail .= '<td class="key alterCell" width="15%"><strong>'.__('Member ID').'</strong></td><td class="value alterCell2" width="30%">'.$_SESSION['mid'].'</td>';
+        $_detail .= '<th width="15%">'.__('Member Name').'</th><td >'.$_SESSION['m_name'].'</td>';
+        $_detail .= '<th width="15%">'.__('Member ID').'</th><td  >'.$_SESSION['mid'].'</td>';
         $_detail .= '</tr>'."\n";
         $_detail .= '<tr>'."\n";
-        $_detail .= '<td class="key alterCell" width="15%"><strong>'.__('Member Email').'</strong></td><td class="value alterCell2" width="30%">'.$_SESSION['m_email'].'</td>';
-        $_detail .= '<td class="key alterCell" width="15%"><strong>'.__('Member Type').'</strong></td><td class="value alterCell2" width="30%">'.$_SESSION['m_member_type'].'</td>';
+        $_detail .= '<th >'.__('Member Email').'</th><td >'.$_SESSION['m_email'].'</td>';
+        $_detail .= '<th >'.__('Member Type').'</th><td  >'.$_SESSION['m_member_type'].'</td>';
         $_detail .= '</tr>'."\n";
         $_detail .= '<tr>'."\n";
-        $_detail .= '<td class="key alterCell" width="15%"><strong>'.__('Register Date').'</strong></td><td class="value alterCell2" width="30%">'.$_SESSION['m_register_date'].'</td>';
-        $_detail .= '<td class="key alterCell" width="15%"><strong>'.__('Expiry Date').'</strong></td><td class="value alterCell2" width="30%">'.$_SESSION['m_expire_date'].'</td>';
+        $_detail .= '<th width="15%">'.__('Register Date').'</th><td  >'.$_SESSION['m_register_date'].'</td>';
+        $_detail .= '<th width="15%">'.__('Expiry Date').'</th><td   >'.$_SESSION['m_expire_date'].'</td>';
         $_detail .= '</tr>'."\n";
         $_detail .= '<tr>'."\n";
-        $_detail .= '<td class="key alterCell" width="15%"><strong>'.__('Institution').'</strong></td>'
-            .'<td class="value alterCell2" colspan="3">'.$_SESSION['m_institution'].'</td>';
+        $_detail .= '<th>'.__('Institution').'</th>'
+            .'<td colspan="3">'.$_SESSION['m_institution'].'</td>';
         $_detail .= '</tr>'."\n";
         $_detail .= '</table>'."\n";
 
@@ -473,12 +487,12 @@ if (!$is_member_login) {
         // modify column value
         $_loan_list->modifyColumnContent(3, 'callback{showOverdue}');
         // set table and table header attributes
-        $_loan_list->table_attr = 'align="center" class="memberLoanList" cellpadding="5" cellspacing="0"';
+        $_loan_list->table_attr = '  class="table"  ';
         $_loan_list->table_header_attr = 'class="dataListHeader" style="font-weight: bold;"';
         $_loan_list->using_AJAX = false;
         // return the result
         $_result = $_loan_list->createDataGrid($dbs, $_table_spec, $num_recs_show);
-        $_result = '<div class="memberLoanListInfo">'.$_loan_list->num_rows.' '.__('item(s) currently on loan').' | <a href="?p=download_current_loan">Download All Current Loan</a></div>'."\n".$_result;
+        $_result = '<div class="memberLoanListInfo">'.$_loan_list->num_rows.' '.__('item(s) currently on loan').' <a class="pull-right" href="?p=download_current_loan">Download All Current Loan</a></div>'."\n".$_result;
         return $_result;
     }
 
@@ -508,12 +522,12 @@ if (!$is_member_login) {
         // modify column value
         #$_loan_hist->modifyColumnContent(3, 'callback{showOverdue}');
         // set table and table header attributes
-        $_loan_hist->table_attr = 'align="center" class="memberLoanList" cellpadding="5" cellspacing="0"';
+        $_loan_hist->table_attr = 'class="table"';
         $_loan_hist->table_header_attr = 'class="dataListHeader" style="font-weight: bold;"';
         $_loan_hist->using_AJAX = false;
         // return the result
         $_result = $_loan_hist->createDataGrid($dbs, $_table_spec, $num_recs_show);
-        $_result = '<div class="memberLoanHistInfo"> &nbsp;'.$_loan_hist->num_rows.' '.__('item(s) loan history').' | <a href="?p=download_loan_history">Download All Loan History</a></div>'."\n".$_result;
+        $_result = '<div class="memberLoanHistInfo"> &nbsp;'.$_loan_hist->num_rows.' '.__('item(s) loan history').'  <a class="pull-right" href="?p=download_loan_history">Download All Loan History</a></div>'."\n".$_result;
         return $_result;
     }
     /* Experimental Loan History - end */
@@ -588,34 +602,71 @@ if (!$is_member_login) {
     }
 
     // show all
-	echo '<div class="tagline">';
-    echo '<div class="memberInfoHead">'.__('Member Detail').'</div>'."\n";
-    echo '</div>';
-    echo '<div class="collection-list"><div class="item_list">';
-    echo showMemberDetail();
-    echo '</div>';
-	echo '<div class="tagline">';
-    echo '<div class="memberInfoHead">'.__('Your Current Loan').'</div>'."\n";
-    echo '</div>';
-    echo '<div class="collection-list"><div class="item_list">';
-    echo showLoanList();
-    echo '</div>';
-	echo '<div class="tagline">';
-    echo '<div class="memberInfoHead">'.__('Your Loan History').'</div>'."\n";
-    echo '</div>';
-    echo showLoanHist();
-    echo '</div>';
-	echo '<div class="tagline">';
-    echo '<div class="memberInfoHead">'.__('Your Title Basket').'</div><a name="biblioBasket"></a>'."\n";
-    echo showBasket();
-    echo '</div>';
-    // change password only form NATIVE authentication, not for others such as LDAP
+	echo '<div  class="accordion" id="accordion2">';
+	echo '<div class="accordion-group">';
+	echo '	<div class="accordion-heading">';
+	echo '		<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">'.__('Member Detail').'</a>';
+	echo '</div>';
+	echo '<div id="collapseOne" class="accordion-body collapse in">';
+	echo '<div class="accordion-inner">
+			'.showMemberDetail().'
+		</div>';
+	echo '</div>';
+	echo '</div>';
+
+	echo '<div class="accordion-group">';
+	echo '	<div class="accordion-heading">';
+	echo '		<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">'.__('Your Current Loan').'</a>';
+	echo '</div>';
+	echo '<div id="collapseTwo" class="accordion-body collapse   ">';
+	echo '<div class="accordion-inner">
+			'.showLoanList().'
+		</div>';
+	echo '</div>';
+	echo '</div>';
+
+	echo '<div class="accordion-group">';
+	echo '	<div class="accordion-heading">';
+	echo '		<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseThree">'.__('Your Loan History').'</a>';
+	echo '</div>';
+	echo '<div id="collapseThree" class="accordion-body collapse   ">';
+	echo '<div class="accordion-inner">
+			'.showLoanHist().'
+		</div>';
+	echo '</div>';
+	echo '</div>';
+
+	echo '<div class="accordion-group">';
+	echo '	<div class="accordion-heading">';
+	echo '		<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseFour">'.__('Your Title Basket').'</a>';
+	echo '</div>';
+	echo '<div id="collapseFour" class="accordion-body collapse   ">';
+	echo '<div class="accordion-inner">
+		'.showBasket().'
+	</div>';
+	echo '</div>';
+	echo '</div>';
+
+	// change password only form NATIVE authentication, not for others such as LDAP
     if ($sysconf['auth']['member']['method'] == 'native') {
-	echo '<div class="tagline">';
-        echo '<div class="memberInfoHead">'.__('Change Password').'</div>'."\n";
-	    echo '</div>';
-        echo changePassword();
-    }
+	echo '<div class="accordion-group">';
+	echo '	<div class="accordion-heading">';
+	echo '		<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseFive">'.__('Change Password').'</a>';
+	echo '</div>';
+	echo '<div id="collapseFive" class="accordion-body collapse   ">';
+	echo '<div class="accordion-inner">
+		'.changePassword().'
+	</div>';
+	echo '</div>';
+	echo '</div>';
+	   }
+
+	echo '</div>';
+
+
+
+
+
     ?>
     <script type="text/javascript">
     $(document).ready( function() {
